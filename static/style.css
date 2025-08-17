@@ -13,7 +13,8 @@ body {
 }
 
 .main-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
     gap: 2vw;
     width: 100%;
     max-width: 95vw;
@@ -21,14 +22,12 @@ body {
 }
 
 .left-panel {
-    flex: 2;
     display: flex;
     flex-direction: column;
     gap: 2vw;
 }
 
 .right-panel {
-    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 2vw;
@@ -53,7 +52,7 @@ body {
 }
 
 .clock-panel {
-    height: 30%;
+    flex-grow: 1;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -115,13 +114,7 @@ body {
     flex-direction: column;
     flex-grow: 1;
     gap: 1vw;
-    min-height: 0; /* Ensures the flex item can shrink */
-}
-
-.search-controls {
-    display: flex;
-    gap: 1vw;
-    align-items: center;
+    min-height: 0;
 }
 
 #search-input {
@@ -141,7 +134,7 @@ body {
     flex-direction: column;
     gap: 0.5vw;
     padding-right: 0.5vw;
-    min-height: 0; /* Allows this container to scroll properly */
+    min-height: 0;
 }
 
 #search-results-list::-webkit-scrollbar {

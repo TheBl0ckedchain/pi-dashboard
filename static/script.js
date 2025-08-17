@@ -12,14 +12,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Debounce function to limit API calls
     let searchTimeout;
     const performSearch = async () => {
-        const query = searchInput.value;
+        const query = searchInput.value.trim();
         if (query.length < 2) {
             searchResultsList.innerHTML = '';
             return;
         }
 
         try {
-            const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}`);
+            const response = await fetch(`/api/spotify/search_combined?query=${encodeURIComponent(query)}`);
             const results = await response.json();
             
             searchResultsList.innerHTML = '';
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             results.forEach(item => {
                 const name = item.name;
                 const artistOrOwner = item.type === 'track' ? item.artist : item.owner;
-                const image = item.image;
+                const image = item.image || '/static/default_album_art.png'; // Fallback image
                 const uri = item.uri;
                 const type = item.type;
 

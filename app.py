@@ -57,19 +57,17 @@ def control_spotify():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/spotify/search', methods=['GET'])
-def search_spotify():
+@app.route('/api/spotify/search_combined', methods=['GET'])
+def search_combined():
     query = request.args.get('query')
     if not query:
-        return jsonify({"error": "Query parameter is required"}), 400
+        return jsonify([])
     try:
         track_results = spotify_api.search_items(query, item_type='track')
         playlist_results = spotify_api.search_items(query, item_type='playlist')
         
-        # Combine results, prioritizing tracks
         combined_results = track_results + playlist_results
         
-        # Sort by relevance or simply return in a combined list
         return jsonify(combined_results)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
