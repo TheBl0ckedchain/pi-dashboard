@@ -52,13 +52,17 @@ body {
 }
 
 .clock-panel {
-    height: 20vh; /* Fixed height for the clock panel */
+    /* Fixed height to make it smaller as requested */
+    height: 12vh;
     justify-content: center;
     align-items: center;
     text-align: center;
+    flex-shrink: 0;
 }
 
 .secondary-panel {
+    /* This is the key fix to prevent the panel from growing */
+    height: 70vh;
     flex-grow: 1;
     min-height: 0;
     display: flex;
@@ -165,12 +169,15 @@ body {
     color: #fff;
     font-size: 1.2vw;
     margin-bottom: 15px;
+    box-sizing: border-box; /* Crucial for consistent width */
+    flex-shrink: 0; /* Prevents it from shrinking */
 }
 
+/* This is the container for search results */
 #search-results-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    min-height: 0;
+    flex-grow: 1; /* Fills remaining vertical space */
+    overflow-y: auto; /* Adds a vertical scrollbar when needed */
+    min-height: 0; /* Prevents overflow issues */
     display: flex;
     flex-direction: column;
     gap: 1vw;
