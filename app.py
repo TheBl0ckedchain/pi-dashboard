@@ -1,13 +1,10 @@
 import flask
-from flask import Flask, send_from_directory, jsonify
+from flask import Flask, send_from_directory, jsonify, request
 import time
 import threading
 import json
 import os
 import atexit
-
-# You'll need to install Flask
-# pip3 install Flask
 
 from spotify_api import SpotifyAPI
 import config
@@ -31,11 +28,12 @@ def get_current_track():
             track_name = current_track['item']['name']
             artist_name = current_track['item']['artists'][0]['name']
             album_art_url = current_track['item']['album']['images'][0]['url']
+            is_playing = current_track.get('is_playing', False)
             return jsonify({
                 "track_name": track_name,
                 "artist_name": artist_name,
                 "album_art": album_art_url,
-                "is_playing": current_track['is_playing']
+                "is_playing": is_playing
             })
         else:
             return jsonify({"status": "no_track"})
@@ -44,7 +42,7 @@ def get_current_track():
 
 @app.route('/api/spotify/control', methods=['POST'])
 def control_spotify():
-    action = flask.request.json.get('action')
+    action = request.json.get('action')
     try:
         if action == 'next':
             spotify_api.next_track()
@@ -52,10 +50,23 @@ def control_spotify():
             spotify_api.previous_track()
         elif action == 'toggle_playback':
             spotify_api.toggle_playback()
+        elif action == 'play_track':
+            uri = request.json.get('uri')
+            spotify_api.play_track(uri)
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/spotify/search_tracks', methods=['GET'])
+def search_tracks():
+    query = request.args.get('query')
+    if not query:
+        return jsonify({"error": "Query parameter is required"}), 400
+    try:
+        results = spotify_api.search_tracks(query)
+        return jsonify(results)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
-    # Start the Flask web server
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -5,33 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raspberry Pi Dashboard</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="main-container">
-        <div class="panel spotify-panel">
-            <div class="now-playing">
-                <img id="album-art" src="" alt="Album Art">
-                <div id="track-info">
-                    <h2 id="track-name"></h2>
-                    <p id="artist-name"></p>
+        <div class="left-panel">
+            <div class="panel spotify-panel">
+                <div class="album-art-section">
+                    <img id="album-art" src="" alt="Album Art">
+                    <div class="track-info">
+                        <h2 id="track-name"></h2>
+                        <p id="artist-name"></p>
+                    </div>
                 </div>
-            </div>
-            <div class="controls">
-                <button id="prev-btn">⏮️</button>
-                <button id="play-pause-btn">⏯️</button>
-                <button id="next-btn">⏭️</button>
-            </div>
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search for music...">
-                <div id="search-results"></div>
+
+                <div class="playback-controls-section">
+                    <button id="prev-btn"><i class="fas fa-backward"></i></button>
+                    <button id="play-pause-btn"><i class="fas fa-play"></i></button>
+                    <button id="next-btn"><i class="fas fa-forward"></i></button>
+                </div>
+
+                <div class="search-section">
+                    <input type="text" id="search-input" placeholder="Search for music...">
+                    <div id="search-results-list"></div>
+                </div>
             </div>
         </div>
 
-        <div class="panel right-panel">
-            <div class="clock-panel">
+        <div class="right-panel">
+            <div class="panel clock-panel">
                 <h1 id="current-time"></h1>
             </div>
-            <div class="future-features-panel">
+
+            <div class="panel future-features-panel">
                 <h2>Future Features</h2>
                 <p>This panel is ready for new features!</p>
             </div>
