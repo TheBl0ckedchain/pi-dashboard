@@ -25,24 +25,7 @@ class IcloudAPI:
                     return
                 print("2FA code verified.")
             
-            if self.api.requires_2sv:
-                print("Two-step verification required.")
-                trusted_devices = self.api.trusted_devices
-                print("Trusted devices:")
-                for i, device in enumerate(trusted_devices):
-                    print(f"  {i}: {device.get('deviceName', 'Unknown device')}")
-                device_index = int(input("Enter the index of your trusted device: "))
-                device = trusted_devices[device_index]
-                result = self.api.send_verification_code(device)
-                if not result:
-                    print("Failed to send verification code.")
-                    return
-                code = input("Enter the verification code: ")
-                result = self.api.validate_verification_code(device, code)
-                if not result:
-                    print("Invalid verification code.")
-                    return
-                print("Verification code verified.")
+            # The 'if self.api.requires_2sv:' block is removed here.
 
             print("iCloud authenticated successfully.")
 
