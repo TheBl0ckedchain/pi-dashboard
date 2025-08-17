@@ -73,5 +73,14 @@ def search_combined():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/spotify/queue')
+def get_queue():
+    try:
+        queue_data = spotify_api.get_queue()
+        return jsonify(queue_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

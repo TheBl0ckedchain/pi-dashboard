@@ -93,3 +93,33 @@ class SpotifyAPI:
         except Exception as e:
             print(f"Error playing URI: {e}")
             self.authenticate()
+
+    def _format_track(self, track):
+        return {
+            'uri': track['uri'],
+            'name': track['name'],
+            'artist': track['artists'][0]['name'] if track['artists'] else 'Unknown Artist',
+            'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
+        }
+
+    def get_queue(self):
+        try:
+            queue = self.sp.queue()
+            
+            currently_playing = None
+            if queue.get('currently_playing'):
+                currently_playing = self._format_track(queue['currently_playing'])
+
+            queue_items = []
+            if queue.get('queue'):
+                for item in queue['queue']:
+                    queue_items.append(self._format_track(item))
+            
+            return {
+                'currently_playing': currently_playing,
+                'queue': queue_items
+            }
+        except Exception as e:
+            print(f"Error getting queue: {e}")
+            self.authenticate()
+            return {'error': str(e)}

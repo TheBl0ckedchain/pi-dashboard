@@ -34,25 +34,29 @@
 
             <div class="panel secondary-panel">
                 <div class="tab-container">
-                    <button class="tab-button active" data-tab="now-playing-tab">Now Playing</button>
+                    <button class="tab-button active" data-tab="playlist-tab">Playlist</button>
                     <button class="tab-button" data-tab="queue-tab">Queue</button>
                     <button class="tab-button" data-tab="search-tab">Search</button>
                 </div>
 
-                <div id="now-playing-tab" class="tab-content">
-                    <div id="now-playing-info">
+                <div id="playlist-tab" class="tab-content">
+                    <div class="now-playing-info">
+                        <img id="now-playing-album-art" src="" alt="Album Art">
+                        <div class="now-playing-track-info">
+                            <h4 id="now-playing-track-name"></h4>
+                            <p id="now-playing-artist-name"></p>
                         </div>
+                    </div>
+                    <div id="playlist-list"></div>
                 </div>
 
                 <div id="queue-tab" class="tab-content" style="display:none;">
-                    <div id="queue-list">
-                        </div>
+                    <div id="queue-list"></div>
                 </div>
 
                 <div id="search-tab" class="tab-content" style="display:none;">
                     <input type="text" id="search-input" placeholder="Search for tracks, artists or playlists...">
-                    <div id="search-results-list">
-                        </div>
+                    <div id="search-results-list"></div>
                 </div>
             </div>
         </div>
