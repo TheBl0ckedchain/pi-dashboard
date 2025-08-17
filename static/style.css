@@ -13,7 +13,7 @@ body {
 }
 
 .main-container {
-    /* Updated the width ratio to 1fr 3fr to give the left panel more width */
+    /* Adjusted the grid columns to give the left panel a little more than 1/4th of the width */
     display: grid;
     grid-template-columns: 1fr 3fr;
     gap: 2vw;
@@ -211,7 +211,7 @@ body {
     margin: 10px 0 5px 0;
 }
 
-/* NEW: Styles for queue and playlist items */
+/* Styles for queue and playlist items (now correctly styled) */
 .track-list-item {
     display: flex;
     align-items: center;
@@ -239,6 +239,7 @@ body {
     border-radius: 0.5vw;
 }
 
+/* Styles for the "Now Playing" banner inside the playlist tab */
 .now-playing-info {
     display: flex;
     align-items: center;
@@ -247,6 +248,7 @@ body {
     background-color: rgba(255, 255, 255, 0.15);
     border-radius: 1vw;
     margin-bottom: 1vw;
+    flex-shrink: 0;
 }
 
 .now-playing-album-art {

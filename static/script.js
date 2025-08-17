@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-    
+
     // New DOM elements for Playlist/Queue/Search
     const tabButtons = document.querySelectorAll('.tab-button');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nowPlayingAlbumArt = document.getElementById('now-playing-album-art');
     const nowPlayingTrackName = document.getElementById('now-playing-track-name');
     const nowPlayingArtistName = document.getElementById('now-playing-artist-name');
-    
+
     const playlistList = document.getElementById('playlist-list');
     const queueList = document.getElementById('queue-list');
     
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             searchResultsList.innerHTML = '';
             return;
         }
-    
+
         try {
             const response = await fetch(`/api/spotify/search_combined?query=${encodeURIComponent(query)}`);
             const results = await response.json();
@@ -40,19 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchResultsList.innerHTML = `<p style="color: red;">Error: ${results.error}</p>`;
                 return;
             }
-    
+
             if (results.length === 0) {
                 searchResultsList.innerHTML = `<p style="text-align: center;">No results found.</p>`;
                 return;
             }
-    
+
             results.forEach(item => {
                 const name = item.name;
                 let subtitle;
                 let uri = item.uri;
                 let image = item.image || '/static/default_album_art.png';
                 let type = item.type;
-    
+
                 if (type === 'track') {
                     subtitle = `by ${item.artist}`;
                 } else if (type === 'playlist') {
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (type === 'artist') {
                     subtitle = 'Artist';
                 }
-    
+
                 const resultItem = document.createElement('div');
                 resultItem.className = 'search-result-item';
                 resultItem.innerHTML = `
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(performSearch, 300);
     });
-    
+
     // Tab switching logic
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -97,14 +97,14 @@ document.addEventListener('DOMContentLoaded', () => {
             targetTab.style.display = 'flex';
         });
     });
-    
+
     // Clock functionality
     setInterval(() => {
         const now = new Date();
         clockElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true});
     }, 1000);
-    
-    // Function to render a list of tracks (updated to use new styles)
+
+    // Function to render a list of tracks (now correctly styled for queue and playlist)
     function renderTrackList(element, tracks, nowPlayingUri) {
         element.innerHTML = '';
         tracks.forEach(track => {
