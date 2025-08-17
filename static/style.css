@@ -258,3 +258,19 @@ body {
     min-height: 40px;
     border-radius: 0.5vw;
 }
+
+.action-button {
+    background-color: #1DB954;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+    margin: 10px 0;
+    width: 100%;
+}
+.action-button:hover {
+    transform: scale(1.05);
+}

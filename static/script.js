@@ -20,6 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const playlistList = document.getElementById('playlist-list');
     const queueList = document.getElementById('queue-list');
+    const playlistActions = document.getElementById('playlist-actions');
+    const playAllBtn = document.getElementById('play-all-btn');
     
     // Debounce function to limit API calls
     let searchTimeout;
@@ -79,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         } else {
                             // This will now view the playlist/artist instead of playing it
                             resultItem.addEventListener('click', () => {
-                                viewPlaylist(item.uri);
+                                viewUriContent(item.uri);
                             });
                         }
                         searchResultsList.appendChild(resultItem);
@@ -158,23 +160,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Only show one instance of the current song if nothing is in the queue
-            const queueToRender = data.currently_playing_uri ? [data.currently_playing_uri].concat(data.queue) : data.queue;
-            renderTrackList(queueList, queueToRender, data.currently_playing_uri);
+            // Only show the current song as the first item if it exists, followed by the rest of the queue
+            const allQueueItems = [];
+            if (data.currently_playing_uri) {
+                 const currentTrackResponse = await fetch('/api/spotify/current_track');
+                 const currentTrackData = await currentTrackResponse.json();
+                 if (currentTrackData.status !== "no_track") {
+                    allQueueItems.push({
+                        uri: currentTrackData.uri,
+                        name: currentTrackData.track_name,
+                        artist: currentTrackData.artist_name,
+                        image: currentTrackData.album_art
+                    });
+                 }
+            }
+            allQueueItems.push(...data.queue);
+            
+            renderTrackList(queueList, allQueueItems, data.currently_playing_uri);
+
         } catch (error) {
             console.error('Error fetching queue:', error);
             queueList.innerHTML = `<p style="color: red;">Failed to fetch queue. Please check the server connection.</p>`;
         }
     }
     
-    // New function to fetch and render playlist data
-    async function viewPlaylist(uri) {
+    // New function to fetch and render playlist/artist content
+    async function viewUriContent(uri) {
         // Switch to the playlist tab
         tabButtons.forEach(btn => btn.classList.remove('active'));
         document.querySelector('[data-tab="playlist-tab"]').classList.add('active');
         tabContents.forEach(content => content.style.display = 'none');
         document.getElementById('playlist-tab').style.display = 'flex';
         
+        // Show play all button and attach listener
+        playlistActions.style.display = 'block';
+        playAllBtn.onclick = () => sendControlCommand('play', uri);
+
         // Fetch the tracks and render them
         playlistList.innerHTML = `<p style="text-align: center;">Loading tracks...</p>`;
         try {
@@ -186,14 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            // Update "Now Playing" info and render the list of tracks
             const currentTrackResponse = await fetch('/api/spotify/current_track');
             const currentTrackData = await currentTrackResponse.json();
             
             renderTrackList(playlistList, tracks, currentTrackData.uri);
         } catch (error) {
             console.error('Error fetching playlist:', error);
-            playlistList.innerHTML = `<p style="color: red;">Failed to fetch playlist tracks. Please check the server connection.</p>`;
+            playlistList.innerHTML = `<p style="color: red;">Failed to fetch tracks. Please check the server connection.</p>`;
         }
     }
 
@@ -209,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
     
                 // Update now playing info in playlist tab
-                nowPlayingTrackName.textContent = "";
+                nowPlayingTrackName.textContent = "No track playing";
                 nowPlayingArtistName.textContent = "";
                 nowPlayingAlbumArt.src = "";
             } else {
