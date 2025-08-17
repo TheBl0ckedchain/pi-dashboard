@@ -159,7 +159,7 @@ class MainLayout(BoxLayout):
             self.spotify_api.authenticate()
 
     def update_reminders_ui(self, *args):
-        reminders = self.icloud_api.get_reminders()
+        reminders = self.icloud_api.get_reminders(list_name="Your List Name")
         reminders_widget = self.ids.reminders_list
         reminders_widget.clear_widgets()
 
