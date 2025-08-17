@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clockElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true});
     }, 1000);
     
-    // Function to render a list of tracks
+    // Function to render a list of tracks (updated to use new styles)
     function renderTrackList(element, tracks, nowPlayingUri) {
         element.innerHTML = '';
         tracks.forEach(track => {
@@ -217,4 +217,4 @@ document.addEventListener('DOMContentLoaded', () => {
     playPauseBtn.addEventListener('click', () => sendControlCommand('toggle_playback'));
     prevBtn.addEventListener('click', () => sendControlCommand('previous'));
     nextBtn.addEventListener('click', () => sendControlCommand('next'));
-    });
+});

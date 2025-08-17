@@ -13,8 +13,9 @@ body {
 }
 
 .main-container {
+    /* Updated the width ratio to 1fr 3fr to give the left panel more width */
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: 1fr 3fr;
     gap: 2vw;
     width: 100%;
     max-width: 95vw;
@@ -52,7 +53,6 @@ body {
 }
 
 .clock-panel {
-    /* Fixed height to make it smaller as requested */
     height: 12vh;
     justify-content: center;
     align-items: center;
@@ -61,7 +61,6 @@ body {
 }
 
 .secondary-panel {
-    /* This is the key fix to prevent the panel from growing */
     height: 70vh;
     flex-grow: 1;
     min-height: 0;
@@ -169,15 +168,14 @@ body {
     color: #fff;
     font-size: 1.2vw;
     margin-bottom: 15px;
-    box-sizing: border-box; /* Crucial for consistent width */
-    flex-shrink: 0; /* Prevents it from shrinking */
+    box-sizing: border-box;
+    flex-shrink: 0;
 }
 
-/* This is the container for search results */
 #search-results-list {
-    flex-grow: 1; /* Fills remaining vertical space */
-    overflow-y: auto; /* Adds a vertical scrollbar when needed */
-    min-height: 0; /* Prevents overflow issues */
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: 1vw;
@@ -211,4 +209,50 @@ body {
     color: #999;
     text-transform: uppercase;
     margin: 10px 0 5px 0;
+}
+
+/* NEW: Styles for queue and playlist items */
+.track-list-item {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    padding: 1vw;
+    background: transparent;
+    border-radius: 1vw;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.track-list-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.track-list-item.now-playing-highlight {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.track-list-image {
+    width: 4vw;
+    height: 4vw;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 0.5vw;
+}
+
+.now-playing-info {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    padding: 1vw;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-radius: 1vw;
+    margin-bottom: 1vw;
+}
+
+.now-playing-album-art {
+    width: 4vw;
+    height: 4vw;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 0.5vw;
 }
