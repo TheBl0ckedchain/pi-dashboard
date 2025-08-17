@@ -49,25 +49,39 @@ class SpotifyAPI:
             print(f"Error toggling playback: {e}")
             self.authenticate()
 
-    def search_tracks(self, query):
+    def search_items(self, query, item_type):
         try:
-            results = self.sp.search(q=query, type='track', limit=20)
-            return [{'name': track['name'], 'artist': track['artists'][0]['name'], 'uri': track['uri'], 'album_art': track['album']['images'][0]['url']} for track in results['tracks']['items']]
+            results = self.sp.search(q=query, type=item_type, limit=10)
+            items = []
+            if item_type == 'track':
+                for track in results['tracks']['items']:
+                    items.append({
+                        'type': 'track',
+                        'name': track['name'],
+                        'artist': track['artists'][0]['name'],
+                        'uri': track['uri'],
+                        'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
+                    })
+            elif item_type == 'playlist':
+                for playlist in results['playlists']['items']:
+                    items.append({
+                        'type': 'playlist',
+                        'name': playlist['name'],
+                        'owner': playlist['owner']['display_name'],
+                        'uri': playlist['uri'],
+                        'image': playlist['images'][0]['url'] if playlist['images'] else ''
+                    })
+            return items
         except Exception as e:
-            print(f"Error searching for tracks: {e}")
+            print(f"Error searching for {item_type}s: {e}")
             return []
 
-    def search_playlists(self, query):
+    def play_uri(self, uri):
         try:
-            results = self.sp.search(q=query, type='playlist', limit=20)
-            return [{'name': playlist['name'], 'owner': playlist['owner']['display_name'], 'uri': playlist['uri'], 'image': playlist['images'][0]['url'] if playlist['images'] else ''} for playlist in results['playlists']['items']]
+            if "track" in uri:
+                self.sp.start_playback(uris=[uri])
+            elif "playlist" in uri:
+                self.sp.start_playback(context_uri=uri)
         except Exception as e:
-            print(f"Error searching for playlists: {e}")
-            return []
-
-    def play_track(self, uri):
-        try:
-            self.sp.start_playback(uris=[uri])
-        except Exception as e:
-            print(f"Error playing track: {e}")
+            print(f"Error playing URI: {e}")
             self.authenticate()

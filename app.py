@@ -50,9 +50,9 @@ def control_spotify():
             spotify_api.previous_track()
         elif action == 'toggle_playback':
             spotify_api.toggle_playback()
-        elif action == 'play_track':
+        elif action == 'play':
             uri = request.json.get('uri')
-            spotify_api.play_track(uri)
+            spotify_api.play_uri(uri)
         return jsonify({"status": "success"})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -60,18 +60,17 @@ def control_spotify():
 @app.route('/api/spotify/search', methods=['GET'])
 def search_spotify():
     query = request.args.get('query')
-    search_type = request.args.get('type', 'track')
     if not query:
         return jsonify({"error": "Query parameter is required"}), 400
     try:
-        if search_type == 'track':
-            results = spotify_api.search_tracks(query)
-            return jsonify(results)
-        elif search_type == 'playlist':
-            results = spotify_api.search_playlists(query)
-            return jsonify(results)
-        else:
-            return jsonify({"error": "Invalid search type"}), 400
+        track_results = spotify_api.search_items(query, item_type='track')
+        playlist_results = spotify_api.search_items(query, item_type='playlist')
+        
+        # Combine results, prioritizing tracks
+        combined_results = track_results + playlist_results
+        
+        # Sort by relevance or simply return in a combined list
+        return jsonify(combined_results)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

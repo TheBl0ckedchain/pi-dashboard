@@ -7,27 +7,71 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const searchInput = document.getElementById('search-input');
-    const searchType = document.getElementById('search-type');
     const searchResultsList = document.getElementById('search-results-list');
 
     // Debounce function to limit API calls
-    const debounce = (func, delay) => {
-        let timeoutId;
-        return (...args) => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                func.apply(null, args);
-            }, delay);
-        };
-    };
+    let searchTimeout;
+    const performSearch = async () => {
+        const query = searchInput.value;
+        if (query.length < 2) {
+            searchResultsList.innerHTML = '';
+            return;
+        }
 
-    // Update clock every second
+        try {
+            const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}`);
+            const results = await response.json();
+            
+            searchResultsList.innerHTML = '';
+            
+            if (results.error) {
+                searchResultsList.innerHTML = `<p style="color: red;">Error: ${results.error}</p>`;
+                return;
+            }
+
+            if (results.length === 0) {
+                searchResultsList.innerHTML = `<p style="text-align: center;">No results found.</p>`;
+                return;
+            }
+
+            results.forEach(item => {
+                const name = item.name;
+                const artistOrOwner = item.type === 'track' ? item.artist : item.owner;
+                const image = item.image;
+                const uri = item.uri;
+                const type = item.type;
+
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+                resultItem.innerHTML = `
+                    <img src="${image}" class="search-result-image">
+                    <div>
+                        <h4 style="margin: 0; color: white;">${name}</h4>
+                        <p style="margin: 0; color: #b3b3b3;">${artistOrOwner} - ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+                    </div>
+                `;
+                resultItem.addEventListener('click', () => {
+                    sendControlCommand('play', uri);
+                });
+                searchResultsList.appendChild(resultItem);
+            });
+        } catch (error) {
+            console.error('Error searching:', error);
+            searchResultsList.innerHTML = `<p style="color: red;">Failed to fetch search results. Please check the server connection.</p>`;
+        }
+    };
+    
+    searchInput.addEventListener('keyup', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300); // 300ms delay
+    });
+    
+    // Clock and Player functionality remains the same
     setInterval(() => {
         const now = new Date();
         clockElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true});
     }, 1000);
 
-    // Fetch and update Spotify data
     async function updateSpotifyInfo() {
         try {
             const response = await fetch('/api/spotify/current_track');
@@ -49,11 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Update Spotify info every 5 seconds
     setInterval(updateSpotifyInfo, 5000);
     updateSpotifyInfo();
 
-    // Handle button clicks for playback controls
     const sendControlCommand = async (action, uri = null) => {
         const payload = { action };
         if (uri) {
@@ -73,54 +115,4 @@ document.addEventListener('DOMContentLoaded', () => {
     playPauseBtn.addEventListener('click', () => sendControlCommand('toggle_playback'));
     prevBtn.addEventListener('click', () => sendControlCommand('previous'));
     nextBtn.addEventListener('click', () => sendControlCommand('next'));
-
-    // Handle live search
-    const performSearch = async () => {
-        const query = searchInput.value;
-        const type = searchType.value;
-        
-        if (!query) {
-            searchResultsList.innerHTML = '';
-            return;
-        }
-        
-        try {
-            const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}&type=${type}`);
-            const results = await response.json();
-            
-            searchResultsList.innerHTML = '';
-            if (results.error) {
-                searchResultsList.innerHTML = `<p style="color: red;">Error: ${results.error}</p>`;
-                return;
-            }
-
-            results.forEach(item => {
-                const isTrack = type === 'track';
-                const name = isTrack ? item.name : item.name;
-                const artistOrOwner = isTrack ? item.artist : item.owner;
-                const image = isTrack ? item.album_art : (item.image || 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0');
-                const uri = item.uri;
-
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `
-                    <img src="${image}" class="search-result-image">
-                    <div>
-                        <h4 style="margin: 0; color: white;">${name}</h4>
-                        <p style="margin: 0; color: #b3b3b3;">${artistOrOwner}</p>
-                    </div>
-                `;
-                resultItem.addEventListener('click', () => {
-                    sendControlCommand('play_track', uri);
-                });
-                searchResultsList.appendChild(resultItem);
-            });
-        } catch (error) {
-            console.error('Error searching:', error);
-        }
-    };
-
-    const debouncedSearch = debounce(performSearch, 300); // 300ms delay
-    searchInput.addEventListener('keyup', debouncedSearch);
-    searchType.addEventListener('change', performSearch);
 });
