@@ -89,7 +89,6 @@ body {
     justify-content: center;
     align-items: center;
     gap: 2vw;
-    margin-bottom: 1.5vw; /* Added margin to separate from search */
 }
 
 .playback-controls-section button {
@@ -114,8 +113,8 @@ body {
 .search-section {
     display: flex;
     flex-direction: column;
-    flex-grow: 1; /* This is key to taking up remaining space */
-    min-height: 0; /* Prevents overflow */
+    flex-grow: 1;
+    min-height: 0;
     gap: 1vw;
 }
 
@@ -130,7 +129,7 @@ body {
 }
 
 #search-results-list {
-    flex-grow: 1; /* This is key to making the list scrollable */
+    flex-grow: 1;
     overflow-y: auto;
     display: flex;
     flex-direction: column;

@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const name = item.name;
                 let subtitle;
                 let uri = item.uri;
-                let image = item.image || '/static/default_album_art.png';
+                let image = item.image || 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0';
                 let type = item.type;
 
                 if (type === 'track') {
