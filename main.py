@@ -3,6 +3,7 @@
 # main.py (add this at the top)
 
 import os
+from tkinter import Label
 from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang import Builder
@@ -10,6 +11,8 @@ from kivy.config import Config
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 from kivy.uix.image import AsyncImage
+from icloud_api import IcloudAPI
+import config
 import time
 import threading # We will use this later for the Flask server
 
@@ -23,111 +26,42 @@ Config.set('graphics', 'fullscreen', 'auto')
 
 # Load the Kivy language file for UI design
 kv_file = Builder.load_string("""
-<MainLayout>:
-    orientation: 'horizontal'
+# ... inside your .kv string ...
+
+# To-Do List Panel
+BoxLayout:
+    id: todo_panel
+    size_hint: 1, 0.7
+    orientation: 'vertical'
+    padding: 10
     canvas.before:
         Color:
-            rgba: 0.1, 0.1, 0.1, 0.8
+            rgba: 0.2, 0.2, 0.2, 0.5
         Rectangle:
             size: self.size
             pos: self.pos
-    
-    # Left Panel (Spotify)
-    BoxLayout:
-        id: spotify_panel
-        size_hint: 0.7, 1
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
-        canvas.before:
-            Color:
-                rgba: 0.2, 0.2, 0.2, 0.5
-            Rectangle:
-                size: self.size
-                pos: self.pos
-        
-        AsyncImage:
-            id: album_art
-            source: 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0' # Placeholder image
-            size_hint: 1, 0.8
-            allow_stretch: True
-            keep_ratio: True
-        
-        Label:
-            id: track_info
-            text: "No track playing"
-            font_size: '24sp'
-            halign: 'center'
-            valign: 'top'
-            text_size: self.size
-        
-        BoxLayout:
-            size_hint_y: 0.2
-            spacing: 20
-            
-            Button:
-                text: 'Previous'
-                on_release: app.root.spotify_api.previous_track()
-            
-            Button:
-                text: 'Play/Pause'
-                on_release: app.root.spotify_api.toggle_playback()
-            
-            Button:
-                text: 'Next'
-                on_release: app.root.spotify_api.next_track()
 
-    # Right Panels (Clock and To-Do)
-    BoxLayout:
-        id: right_panels
-        size_hint: 0.3, 1
-        orientation: 'vertical'
-        padding: 20
-        spacing: 20
+    Label:
+        text: "Reminders"
+        font_size: '24sp'
+        size_hint_y: None
+        height: '48dp'
 
-        # Clock Panel
+    ScrollView:
         BoxLayout:
-            id: clock_panel
-            size_hint: 1, 0.3
+            id: reminders_list
             orientation: 'vertical'
-            padding: 10
-            canvas.before:
-                Color:
-                    rgba: 0.2, 0.2, 0.2, 0.5
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-
-            Label:
-                id: current_time
-                text: ""
-                font_size: '64sp'
-                bold: True
-                halign: 'center'
-                valign: 'middle'
-
-        # To-Do List Panel
-        BoxLayout:
-            id: todo_panel
-            size_hint: 1, 0.7
-            orientation: 'vertical'
-            padding: 10
-            canvas.before:
-                Color:
-                    rgba: 0.2, 0.2, 0.2, 0.5
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-            
-            Label:
-                text: "To-Do List Panel"
-                font_size: '24sp'
+            size_hint_y: None
+            height: self.minimum_height
+            spacing: 5
+            padding: 5
 """)
 
 class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(MainLayout, self).__init__(**kwargs)
         self.spotify_api = SpotifyAPI()
+        self.icloud_api = IcloudAPI(config.APPLE_ID, config.APPLE_PASSWORD)
     
     def update_time(self, *args):
         self.ids.current_time.text = time.strftime('%I:%M:%S %p')
@@ -149,13 +83,25 @@ class MainLayout(BoxLayout):
             print(f"Error updating Spotify UI: {e}")
             # Re-authenticate if token expires
             self.spotify_api.authenticate()
+            
+    def update_reminders_ui(self, *args):
+        reminders = self.icloud_api.get_reminders()
+        reminders_widget = self.ids.reminders_list
+        reminders_widget.clear_widgets()
+
+        if not reminders:
+            reminders_widget.add_widget(Label(text="No reminders.", size_hint_y=None, height=40))
+            return
+
+        for reminder_text in reminders:
+            reminders_widget.add_widget(Label(text=f"• {reminder_text}", size_hint_y=None, height=40, halign='left', text_size=(self.width * 0.3 - 20, None)))
 
 class ControlPanelApp(App):
     def build(self):
         main_layout = MainLayout()
         Clock.schedule_interval(main_layout.update_time, 1)
-        # Check for new Spotify track info every 5 seconds
-        Clock.schedule_interval(main_layout.update_spotify_ui, 5) 
+        Clock.schedule_interval(main_layout.update_spotify_ui, 5)
+        Clock.schedule_interval(main_layout.update_reminders_ui, 600) # Update reminders every 10 minutes
         return main_layout
 
 if __name__ == '__main__':
