@@ -41,40 +41,57 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            if (results.length === 0) {
-                searchResultsList.innerHTML = `<p style="text-align: center;">No results found.</p>`;
-                return;
-            }
+            // Function to render a single category
+            const renderCategory = (title, items) => {
+                if (items.length > 0) {
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.className = 'result-type-label';
+                    categoryTitle.textContent = title;
+                    searchResultsList.appendChild(categoryTitle);
+                    
+                    items.forEach(item => {
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        
+                        let subtitle = '';
+                        let image = item.image || '/static/default_album_art.png';
 
-            results.forEach(item => {
-                const name = item.name;
-                let subtitle;
-                let uri = item.uri;
-                let image = item.image || '/static/default_album_art.png';
-                let type = item.type;
+                        if (item.type === 'track') {
+                            subtitle = `by ${item.artist}`;
+                        } else if (item.type === 'playlist') {
+                            subtitle = `by ${item.owner}`;
+                        } else if (item.type === 'artist') {
+                            subtitle = 'Artist';
+                        }
+                        
+                        resultItem.innerHTML = `
+                            <img src="${image}" class="search-result-image">
+                            <div>
+                                <h4 style="margin: 0; color: white;">${item.name}</h4>
+                                <p style="margin: 0; color: #b3b3b3;">${subtitle}</p>
+                            </div>
+                        `;
 
-                if (type === 'track') {
-                    subtitle = `by ${item.artist}`;
-                } else if (type === 'playlist') {
-                    subtitle = `by ${item.owner}`;
-                } else if (type === 'artist') {
-                    subtitle = 'Artist';
+                        if (item.type === 'track') {
+                            resultItem.addEventListener('click', () => {
+                                sendControlCommand('play', item.uri);
+                            });
+                        } else {
+                            // This will now view the playlist/artist instead of playing it
+                            resultItem.addEventListener('click', () => {
+                                viewPlaylist(item.uri);
+                            });
+                        }
+                        searchResultsList.appendChild(resultItem);
+                    });
                 }
+            };
+            
+            // Render categories in a specific order
+            renderCategory('Artists', results.artists);
+            renderCategory('Playlists', results.playlists);
+            renderCategory('Songs', results.tracks);
 
-                const resultItem = document.createElement('div');
-                resultItem.className = 'search-result-item';
-                resultItem.innerHTML = `
-                    <img src="${image}" class="search-result-image">
-                    <div>
-                        <h4 style="margin: 0; color: white;">${name}</h4>
-                        <p style="margin: 0; color: #b3b3b3;">${subtitle}</p>
-                    </div>
-                `;
-                resultItem.addEventListener('click', () => {
-                    sendControlCommand('play', uri);
-                });
-                searchResultsList.appendChild(resultItem);
-            });
         } catch (error) {
             console.error('Error searching:', error);
             searchResultsList.innerHTML = `<p style="color: red;">Failed to fetch search results. Please check the server connection.</p>`;
@@ -141,22 +158,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
             
-            renderTrackList(queueList, data.queue, data.currently_playing_uri);
+            // Only show one instance of the current song if nothing is in the queue
+            const queueToRender = data.currently_playing_uri ? [data.currently_playing_uri].concat(data.queue) : data.queue;
+            renderTrackList(queueList, queueToRender, data.currently_playing_uri);
         } catch (error) {
             console.error('Error fetching queue:', error);
             queueList.innerHTML = `<p style="color: red;">Failed to fetch queue. Please check the server connection.</p>`;
         }
     }
     
-    // Placeholder function for fetching playlist data
-    // You will need to implement a backend endpoint for this
-    async function updatePlaylist() {
+    // New function to fetch and render playlist data
+    async function viewPlaylist(uri) {
+        // Switch to the playlist tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        document.querySelector('[data-tab="playlist-tab"]').classList.add('active');
+        tabContents.forEach(content => content.style.display = 'none');
+        document.getElementById('playlist-tab').style.display = 'flex';
+        
+        // Fetch the tracks and render them
+        playlistList.innerHTML = `<p style="text-align: center;">Loading tracks...</p>`;
         try {
-            // For now, this will be empty until you add the backend endpoint
-            playlistList.innerHTML = `<p style="text-align: center;">Playlist functionality is not yet implemented.</p>`;
+            const response = await fetch(`/api/spotify/tracks_from_uri?uri=${encodeURIComponent(uri)}`);
+            const tracks = await response.json();
+            
+            if (tracks.error) {
+                playlistList.innerHTML = `<p style="color: red;">Error: ${tracks.error}</p>`;
+                return;
+            }
+            
+            // Update "Now Playing" info and render the list of tracks
+            const currentTrackResponse = await fetch('/api/spotify/current_track');
+            const currentTrackData = await currentTrackResponse.json();
+            
+            renderTrackList(playlistList, tracks, currentTrackData.uri);
         } catch (error) {
             console.error('Error fetching playlist:', error);
-            playlistList.innerHTML = `<p style="color: red;">Failed to fetch playlist. Please check the server connection.</p>`;
+            playlistList.innerHTML = `<p style="color: red;">Failed to fetch playlist tracks. Please check the server connection.</p>`;
         }
     }
 
@@ -192,7 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Also update the queue whenever the current track info is updated
         updateQueue();
-        updatePlaylist();
     }
     
     setInterval(updateSpotifyInfo, 5000);

@@ -49,6 +49,14 @@ class SpotifyAPI:
             print(f"Error toggling playback: {e}")
             self.authenticate()
 
+    def _format_track(self, track):
+        return {
+            'uri': track['uri'],
+            'name': track['name'],
+            'artist': track['artists'][0]['name'] if track['artists'] else 'Unknown Artist',
+            'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
+        }
+    
     def search_items(self, query, item_type):
         try:
             results = self.sp.search(q=query, type=item_type, limit=10)
@@ -94,32 +102,44 @@ class SpotifyAPI:
             print(f"Error playing URI: {e}")
             self.authenticate()
 
-    def _format_track(self, track):
-        return {
-            'uri': track['uri'],
-            'name': track['name'],
-            'artist': track['artists'][0]['name'] if track['artists'] else 'Unknown Artist',
-            'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
-        }
-
     def get_queue(self):
         try:
             queue = self.sp.queue()
             
-            currently_playing = None
-            if queue.get('currently_playing'):
-                currently_playing = self._format_track(queue['currently_playing'])
-
+            currently_playing_uri = None
             queue_items = []
+            
+            if queue.get('currently_playing'):
+                currently_playing_uri = queue['currently_playing']['uri']
+                
             if queue.get('queue'):
                 for item in queue['queue']:
                     queue_items.append(self._format_track(item))
             
             return {
-                'currently_playing': currently_playing,
+                'currently_playing_uri': currently_playing_uri,
                 'queue': queue_items
             }
         except Exception as e:
             print(f"Error getting queue: {e}")
             self.authenticate()
             return {'error': str(e)}
+
+    def get_tracks_from_uri(self, uri):
+        try:
+            tracks = []
+            if "playlist" in uri:
+                playlist_id = uri.split(':')[-1]
+                results = self.sp.playlist_items(playlist_id)
+                for item in results['items']:
+                    track = item['track']
+                    tracks.append(self._format_track(track))
+            elif "artist" in uri:
+                artist_id = uri.split(':')[-1]
+                results = self.sp.artist_top_tracks(artist_id)
+                for track in results['tracks']:
+                    tracks.append(self._format_track(track))
+            return tracks
+        except Exception as e:
+            print(f"Error getting tracks from URI {uri}: {e}")
+            return []
