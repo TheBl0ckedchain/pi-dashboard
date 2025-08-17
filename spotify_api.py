@@ -4,7 +4,7 @@ import config
 
 class SpotifyAPI:
     def __init__(self):
-        self.scope = "user-read-playback-state user-modify-playback-state user-read-currently-playing user-read-private"
+        self.scope = "user-read-playback-state user-modify-playback-state user-read-currently-playing"
         self.sp_oauth = SpotifyOAuth(
             client_id=config.SPOTIPY_CLIENT_ID,
             client_secret=config.SPOTIPY_CLIENT_SECRET,
@@ -56,3 +56,18 @@ class SpotifyAPI:
         except Exception as e:
             print(f"Error searching for tracks: {e}")
             return []
+
+    def search_playlists(self, query):
+        try:
+            results = self.sp.search(q=query, type='playlist', limit=20)
+            return [{'name': playlist['name'], 'owner': playlist['owner']['display_name'], 'uri': playlist['uri'], 'image': playlist['images'][0]['url'] if playlist['images'] else ''} for playlist in results['playlists']['items']]
+        except Exception as e:
+            print(f"Error searching for playlists: {e}")
+            return []
+
+    def play_track(self, uri):
+        try:
+            self.sp.start_playback(uris=[uri])
+        except Exception as e:
+            print(f"Error playing track: {e}")
+            self.authenticate()

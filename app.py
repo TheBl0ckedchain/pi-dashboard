@@ -57,14 +57,21 @@ def control_spotify():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@app.route('/api/spotify/search_tracks', methods=['GET'])
-def search_tracks():
+@app.route('/api/spotify/search', methods=['GET'])
+def search_spotify():
     query = request.args.get('query')
+    search_type = request.args.get('type', 'track')
     if not query:
         return jsonify({"error": "Query parameter is required"}), 400
     try:
-        results = spotify_api.search_tracks(query)
-        return jsonify(results)
+        if search_type == 'track':
+            results = spotify_api.search_tracks(query)
+            return jsonify(results)
+        elif search_type == 'playlist':
+            results = spotify_api.search_playlists(query)
+            return jsonify(results)
+        else:
+            return jsonify({"error": "Invalid search type"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

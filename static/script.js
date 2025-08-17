@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
     const searchInput = document.getElementById('search-input');
+    const searchType = document.getElementById('search-type');
     const searchResultsList = document.getElementById('search-results-list');
 
     // Update clock every second
@@ -42,13 +43,18 @@ document.addEventListener('DOMContentLoaded', () => {
     updateSpotifyInfo();
 
     // Handle button clicks for playback controls
-    const sendControlCommand = async (action) => {
+    const sendControlCommand = async (action, uri = null) => {
+        const payload = { action };
+        if (uri) {
+            payload.uri = uri;
+        }
+
         await fetch('/api/spotify/control', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ action }),
+            body: JSON.stringify(payload),
         });
         updateSpotifyInfo();
     };
@@ -61,29 +67,36 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('keydown', async (event) => {
         if (event.key === 'Enter') {
             const query = event.target.value;
+            const type = searchType.value;
             if (query) {
                 try {
-                    const response = await fetch('/api/spotify/search_tracks?query=' + encodeURIComponent(query));
+                    const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}&type=${type}`);
                     const results = await response.json();
                     
                     searchResultsList.innerHTML = '';
-                    results.forEach(track => {
-                        const item = document.createElement('div');
-                        item.className = 'search-result-item';
-                        item.innerHTML = `
-                            <img src="${track.album_art}" class="search-result-image">
+                    results.forEach(item => {
+                        const isTrack = type === 'track';
+                        const name = isTrack ? item.name : item.name;
+                        const artistOrOwner = isTrack ? item.artist : item.owner;
+                        const image = isTrack ? item.album_art : (item.image || 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0');
+                        const uri = item.uri;
+
+                        const resultItem = document.createElement('div');
+                        resultItem.className = 'search-result-item';
+                        resultItem.innerHTML = `
+                            <img src="${image}" class="search-result-image">
                             <div>
-                                <h4 style="margin: 0; color: white;">${track.name}</h4>
-                                <p style="margin: 0; color: #b3b3b3;">${track.artist}</p>
+                                <h4 style="margin: 0; color: white;">${name}</h4>
+                                <p style="margin: 0; color: #b3b3b3;">${artistOrOwner}</p>
                             </div>
                         `;
-                        item.addEventListener('click', () => {
-                            sendControlCommand('play_track', { uri: track.uri });
+                        resultItem.addEventListener('click', () => {
+                            sendControlCommand('play_track', uri);
                         });
-                        searchResultsList.appendChild(item);
+                        searchResultsList.appendChild(resultItem);
                     });
                 } catch (error) {
-                    console.error('Error searching for tracks:', error);
+                    console.error('Error searching:', error);
                 }
             }
         }

@@ -26,7 +26,13 @@
                 </div>
 
                 <div class="search-section">
-                    <input type="text" id="search-input" placeholder="Search for music...">
+                    <div class="search-controls">
+                        <input type="text" id="search-input" placeholder="Search for...">
+                        <select id="search-type">
+                            <option value="track">Tracks</option>
+                            <option value="playlist">Playlists</option>
+                        </select>
+                    </div>
                     <div id="search-results-list"></div>
                 </div>
             </div>
