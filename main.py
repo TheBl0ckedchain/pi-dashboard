@@ -23,42 +23,37 @@ kv_file = Builder.load_string("""
 <MainLayout>:
     orientation: 'horizontal'
     canvas.before:
-        # Use a blurred background image for the entire screen
         Rectangle:
-            source: 'background_blur.jpg'  # Replace with your image name
+            source: 'background_blur.jpg'
             size: self.size
             pos: self.pos
-        # Add a subtle dark overlay for contrast
         Color:
             rgba: 0, 0, 0, 0.4
         Rectangle:
             size: self.size
             pos: self.pos
     
-    # Spotify Panel
     BoxLayout:
         id: spotify_panel
         size_hint: 0.7, 1
         orientation: 'vertical'
         padding: 20
         spacing: 20
-        # Glassmorphism effect on the panel
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 0.2  # Semi-transparent white
+                rgba: 1, 1, 1, 0.2
             RoundedRectangle:
                 size: self.size
                 pos: self.pos
-                radius: [20, 20, 20, 20]  # Rounded corners
+                radius: [20, 20, 20, 20]
 
-        # Currently Playing Section
         BoxLayout:
             id: now_playing_section
             orientation: 'vertical'
             size_hint_y: 0.5
             AsyncImage:
                 id: album_art
-                source: '' # Source will be set dynamically
+                source: ''
                 allow_stretch: True
                 keep_ratio: True
             Label:
@@ -69,7 +64,6 @@ kv_file = Builder.load_string("""
                 valign: 'top'
                 text_size: self.size
         
-        # Playback Controls
         BoxLayout:
             size_hint_y: 0.1
             spacing: 20
@@ -83,7 +77,6 @@ kv_file = Builder.load_string("""
                 text: 'Next'
                 on_release: app.root.spotify_api.next_track()
     
-        # Search and Playlists Section
         BoxLayout:
             id: search_and_playlists_section
             orientation: 'vertical'
@@ -102,7 +95,6 @@ kv_file = Builder.load_string("""
                     height: self.minimum_height
                     spacing: 5
 
-    # Right Panels (Clock and Features)
     BoxLayout:
         id: right_panels
         size_hint: 0.3, 1
@@ -110,13 +102,11 @@ kv_file = Builder.load_string("""
         padding: 20
         spacing: 20
 
-        # Clock Panel
         BoxLayout:
             id: clock_panel
             size_hint: 1, 0.3
             orientation: 'vertical'
             padding: 10
-            # Glassmorphism effect
             canvas.before:
                 Color:
                     rgba: 1, 1, 1, 0.2
@@ -133,13 +123,11 @@ kv_file = Builder.load_string("""
                 halign: 'center'
                 valign: 'middle'
 
-        # Future Features Panel
         BoxLayout:
             id: future_features_panel
             size_hint: 1, 0.7
             orientation: 'vertical'
             padding: 10
-            # Glassmorphism effect
             canvas.before:
                 Color:
                     rgba: 1, 1, 1, 0.2
