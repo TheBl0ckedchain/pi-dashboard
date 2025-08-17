@@ -1,4 +1,3 @@
-# main.py
 import os
 from kivy.app import App
 from kivy.core.window import Window
@@ -13,7 +12,6 @@ import time
 import threading
 
 from spotify_api import SpotifyAPI
-from icloud_api import IcloudAPI
 import config
 
 Config.set('graphics', 'fullscreen', 'auto')
@@ -112,31 +110,25 @@ kv_file = Builder.load_string("""
                     pos: self.pos
             
             Label:
-                text: "Reminders"
+                text: "Future Features"
                 font_size: '24sp'
                 size_hint_y: None
                 height: '48dp'
             
-            ScrollView:
-                BoxLayout:
-                    id: reminders_list
-                    orientation: 'vertical'
-                    size_hint_y: None
-                    height: self.minimum_height
-                    spacing: 5
-                    padding: 5
+            Label:
+                text: "This panel is ready for new features!"
+                halign: 'center'
+                valign: 'middle'
 """)
 
 class MainLayout(BoxLayout):
     def __init__(self, **kwargs):
         super(MainLayout, self).__init__(**kwargs)
         self.spotify_api = SpotifyAPI()
-        self.icloud_api = IcloudAPI(config.APPLE_ID, config.APPLE_PASSWORD)
 
     def on_start(self):
         Clock.schedule_interval(self.update_time, 1)
         Clock.schedule_interval(self.update_spotify_ui, 5)
-        Clock.schedule_interval(self.update_reminders_ui, 600)
 
     def update_time(self, *args):
         self.ids.current_time.text = time.strftime('%I:%M:%S %p')
@@ -157,19 +149,6 @@ class MainLayout(BoxLayout):
         except Exception as e:
             print(f"Error updating Spotify UI: {e}")
             self.spotify_api.authenticate()
-
-    def update_reminders_ui(self, *args):
-        reminders = self.icloud_api.get_reminders(list_name="Your List Name")
-        reminders_widget = self.ids.reminders_list
-        reminders_widget.clear_widgets()
-
-        if not reminders:
-            reminders_widget.add_widget(Label(text="No reminders.", size_hint_y=None, height=40))
-            return
-
-        for reminder_text in reminders:
-            reminders_widget.add_widget(Label(text=f"• {reminder_text}", size_hint_y=None, height=40, halign='left', text_size=(self.width * 0.3 - 20, None)))
-
 
 class ControlPanelApp(App):
     def build(self):
