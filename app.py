@@ -64,9 +64,10 @@ def search_combined():
         return jsonify([])
     try:
         track_results = spotify_api.search_items(query, item_type='track')
+        artist_results = spotify_api.search_items(query, item_type='artist')
         playlist_results = spotify_api.search_items(query, item_type='playlist')
         
-        combined_results = track_results + playlist_results
+        combined_results = track_results + artist_results + playlist_results
         
         return jsonify(combined_results)
     except Exception as e:

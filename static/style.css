@@ -58,11 +58,53 @@ body {
     text-align: center;
 }
 
-.future-features-panel {
+.secondary-panel {
     flex-grow: 1;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+    min-height: 0;
+}
+
+/* Secondary Panel Tabs */
+.tab-container {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-button {
+    background: transparent;
+    border: none;
+    color: #b3b3b3;
+    font-size: 1.2rem;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.tab-button:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Tab Content */
+.tab-content {
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0;
+}
+
+.tab-content::-webkit-scrollbar {
+    width: 0.5vw;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+    background-color: #535353;
+    border-radius: 0.25vw;
 }
 
 /* Spotify Sub-Panel Layouts */
@@ -109,41 +151,16 @@ body {
     background: #404040;
 }
 
-.search-section {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    gap: 1vw;
-    min-height: 0;
-}
-
+/* New Search Bar */
 #search-input {
-    flex-grow: 1;
+    width: 100%;
     padding: 1vw;
     border-radius: 50px;
     border: 1px solid #535353;
     background: #282828;
     color: #fff;
     font-size: 1.2vw;
-}
-
-#search-results-list {
-    flex-grow: 1;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5vw;
-    padding-right: 0.5vw;
-    min-height: 0;
-}
-
-#search-results-list::-webkit-scrollbar {
-    width: 0.5vw;
-}
-
-#search-results-list::-webkit-scrollbar-thumb {
-    background-color: #535353;
-    border-radius: 0.25vw;
+    margin-bottom: 15px;
 }
 
 .search-result-item {
@@ -167,4 +184,11 @@ body {
     min-width: 50px;
     min-height: 50px;
     border-radius: 0.5vw;
+}
+
+.result-type-label {
+    font-size: 0.8rem;
+    color: #999;
+    text-transform: uppercase;
+    margin: 10px 0 5px 0;
 }

@@ -24,13 +24,6 @@
                     <button id="play-pause-btn"><i class="fas fa-play"></i></button>
                     <button id="next-btn"><i class="fas fa-forward"></i></button>
                 </div>
-
-                <div class="search-section">
-                    <div class="search-controls">
-                        <input type="text" id="search-input" placeholder="Search for music...">
-                    </div>
-                    <div id="search-results-list"></div>
-                </div>
             </div>
         </div>
 
@@ -39,9 +32,28 @@
                 <h1 id="current-time"></h1>
             </div>
 
-            <div class="panel future-features-panel">
-                <h2>Future Features</h2>
-                <p>This panel is ready for new features!</p>
+            <div class="panel secondary-panel">
+                <div class="tab-container">
+                    <button class="tab-button active" data-tab="now-playing-tab">Now Playing</button>
+                    <button class="tab-button" data-tab="queue-tab">Queue</button>
+                    <button class="tab-button" data-tab="search-tab">Search</button>
+                </div>
+
+                <div id="now-playing-tab" class="tab-content">
+                    <div id="now-playing-info">
+                        </div>
+                </div>
+
+                <div id="queue-tab" class="tab-content" style="display:none;">
+                    <div id="queue-list">
+                        </div>
+                </div>
+
+                <div id="search-tab" class="tab-content" style="display:none;">
+                    <input type="text" id="search-input" placeholder="Search for tracks, artists or playlists...">
+                    <div id="search-results-list">
+                        </div>
+                </div>
             </div>
         </div>
     </div>

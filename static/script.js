@@ -6,8 +6,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
+
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
     const searchInput = document.getElementById('search-input');
     const searchResultsList = document.getElementById('search-results-list');
+    const nowPlayingInfo = document.getElementById('now-playing-info');
 
     // Debounce function to limit API calls
     let searchTimeout;
@@ -36,10 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             results.forEach(item => {
                 const name = item.name;
-                const artistOrOwner = item.type === 'track' ? item.artist : item.owner;
-                const image = item.image || '/static/default_album_art.png'; // Fallback image
-                const uri = item.uri;
-                const type = item.type;
+                let subtitle;
+                let uri = item.uri;
+                let image = item.image || '/static/default_album_art.png';
+                let type = item.type;
+
+                if (type === 'track') {
+                    subtitle = `by ${item.artist}`;
+                } else if (type === 'playlist') {
+                    subtitle = `by ${item.owner}`;
+                } else if (type === 'artist') {
+                    subtitle = 'Artist';
+                }
 
                 const resultItem = document.createElement('div');
                 resultItem.className = 'search-result-item';
@@ -47,7 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <img src="${image}" class="search-result-image">
                     <div>
                         <h4 style="margin: 0; color: white;">${name}</h4>
-                        <p style="margin: 0; color: #b3b3b3;">${artistOrOwner} - ${type.charAt(0).toUpperCase() + type.slice(1)}</p>
+                        <p style="margin: 0; color: #b3b3b3;">${subtitle}</p>
                     </div>
                 `;
                 resultItem.addEventListener('click', () => {
@@ -63,10 +75,22 @@ document.addEventListener('DOMContentLoaded', () => {
     
     searchInput.addEventListener('keyup', () => {
         clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(performSearch, 300); // 300ms delay
+        searchTimeout = setTimeout(performSearch, 300);
     });
-    
-    // Clock and Player functionality remains the same
+
+    // Tab switching logic
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.style.display = 'none');
+            
+            button.classList.add('active');
+            const targetTab = document.getElementById(button.dataset.tab);
+            targetTab.style.display = 'flex';
+        });
+    });
+
+    // Clock and Player functionality
     setInterval(() => {
         const now = new Date();
         clockElement.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit', hour12: true});

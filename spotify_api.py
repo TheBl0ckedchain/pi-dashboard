@@ -62,6 +62,14 @@ class SpotifyAPI:
                         'uri': track['uri'],
                         'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
                     })
+            elif item_type == 'artist':
+                for artist in results['artists']['items']:
+                    items.append({
+                        'type': 'artist',
+                        'name': artist['name'],
+                        'uri': artist['uri'],
+                        'image': artist['images'][0]['url'] if artist['images'] else ''
+                    })
             elif item_type == 'playlist':
                 for playlist in results['playlists']['items']:
                     items.append({
@@ -80,7 +88,7 @@ class SpotifyAPI:
         try:
             if "track" in uri:
                 self.sp.start_playback(uris=[uri])
-            elif "playlist" in uri:
+            else:
                 self.sp.start_playback(context_uri=uri)
         except Exception as e:
             print(f"Error playing URI: {e}")
