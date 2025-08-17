@@ -1,5 +1,4 @@
 # main.py
-
 import os
 from kivy.app import App
 from kivy.core.window import Window
@@ -11,7 +10,7 @@ from kivy.uix.image import AsyncImage
 from kivy.uix.label import Label
 from kivy.uix.scrollview import ScrollView
 import time
-import threading 
+import threading
 
 from spotify_api import SpotifyAPI
 from icloud_api import IcloudAPI
@@ -23,21 +22,12 @@ kv_file = Builder.load_string("""
 <MainLayout>:
     orientation: 'horizontal'
     canvas.before:
-        # This will draw a semi-transparent dark overlay over the background image
         Color:
             rgba: 0.1, 0.1, 0.1, 0.8
         Rectangle:
             size: self.size
             pos: self.pos
-        # You would load a background image here
-        # Color:
-        #     rgba: 1, 1, 1, 1
-        # Rectangle:
-        #     source: 'path/to/your/background.jpg'
-        #     size: self.size
-        #     pos: self.pos
     
-    # Left Panel (Spotify)
     BoxLayout:
         id: spotify_panel
         size_hint: 0.7, 1
@@ -53,7 +43,7 @@ kv_file = Builder.load_string("""
         
         AsyncImage:
             id: album_art
-            source: 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0' # Placeholder image
+            source: 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0'
             size_hint: 1, 0.8
             allow_stretch: True
             keep_ratio: True
@@ -72,17 +62,16 @@ kv_file = Builder.load_string("""
             
             Button:
                 text: 'Previous'
-                on_release: root.spotify_api.previous_track()
+                on_release: app.root.spotify_api.previous_track()
             
             Button:
                 text: 'Play/Pause'
-                on_release: root.spotify_api.toggle_playback()
+                on_release: app.root.spotify_api.toggle_playback()
             
             Button:
                 text: 'Next'
-                on_release: root.spotify_api.next_track()
+                on_release: app.root.spotify_api.next_track()
 
-    # Right Panels (Clock and To-Do)
     BoxLayout:
         id: right_panels
         size_hint: 0.3, 1
@@ -90,7 +79,6 @@ kv_file = Builder.load_string("""
         padding: 20
         spacing: 20
 
-        # Clock Panel
         BoxLayout:
             id: clock_panel
             size_hint: 1, 0.3
@@ -111,7 +99,6 @@ kv_file = Builder.load_string("""
                 halign: 'center'
                 valign: 'middle'
 
-        # To-Do List Panel
         BoxLayout:
             id: todo_panel
             size_hint: 1, 0.7
@@ -147,9 +134,8 @@ class MainLayout(BoxLayout):
         self.icloud_api = IcloudAPI(config.APPLE_ID, config.APPLE_PASSWORD)
 
     def on_start(self):
-        # Schedule the updates AFTER the UI is fully built
         Clock.schedule_interval(self.update_time, 1)
-        Clock.schedule_interval(self.update_spotify_ui, 5) 
+        Clock.schedule_interval(self.update_spotify_ui, 5)
         Clock.schedule_interval(self.update_reminders_ui, 600)
 
     def update_time(self, *args):
@@ -176,13 +162,14 @@ class MainLayout(BoxLayout):
         reminders = self.icloud_api.get_reminders()
         reminders_widget = self.ids.reminders_list
         reminders_widget.clear_widgets()
-        
+
         if not reminders:
             reminders_widget.add_widget(Label(text="No reminders.", size_hint_y=None, height=40))
             return
-            
+
         for reminder_text in reminders:
             reminders_widget.add_widget(Label(text=f"• {reminder_text}", size_hint_y=None, height=40, halign='left', text_size=(self.width * 0.3 - 20, None)))
+
 
 class ControlPanelApp(App):
     def build(self):
@@ -190,7 +177,6 @@ class ControlPanelApp(App):
 
     def on_start(self):
         self.root.on_start()
-
 
 if __name__ == '__main__':
     ControlPanelApp().run()

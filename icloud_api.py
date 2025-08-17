@@ -1,5 +1,4 @@
 # icloud_api.py
-
 import os
 import getpass
 from pyicloud import PyiCloudService
@@ -15,7 +14,7 @@ class IcloudAPI:
         print("Attempting to connect to iCloud...")
         try:
             self.api = PyiCloudService(self.apple_id, self.password)
-            
+
             if self.api.requires_2fa:
                 print("Two-factor authentication required.")
                 code = input("Enter the 2FA code you received: ")
@@ -24,8 +23,6 @@ class IcloudAPI:
                     print("Invalid 2FA code.")
                     return
                 print("2FA code verified.")
-            
-            # The 'if self.api.requires_2sv:' block is removed here.
 
             print("iCloud authenticated successfully.")
 
@@ -39,21 +36,15 @@ class IcloudAPI:
             return []
 
         try:
-            reminders_list = self.api.reminders.lists
+            reminders_lists = self.api.reminders.lists
             reminders_to_display = []
-            
-            if list_name:
-                # Find the specified list
-                reminders_list = [reminders_list[list_name]]
-            else:
-                # Use all lists
-                reminders_list = reminders_list.values()
 
-            for r_list in reminders_list:
-                for reminder in r_list:
-                    if not reminder['isCompleted']:
-                        reminders_to_display.append(reminder['title'])
-            
+            if list_name and list_name in reminders_lists:
+                reminders_to_display.extend([r['title'] for r in reminders_lists[list_name] if not r['isCompleted']])
+            else:
+                for r_list in reminders_lists.values():
+                    reminders_to_display.extend([r['title'] for r in r_list if not r['isCompleted']])
+
             return reminders_to_display
 
         except Exception as e:
