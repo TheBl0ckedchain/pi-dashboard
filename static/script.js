@@ -10,6 +10,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchType = document.getElementById('search-type');
     const searchResultsList = document.getElementById('search-results-list');
 
+    // Debounce function to limit API calls
+    const debounce = (func, delay) => {
+        let timeoutId;
+        return (...args) => {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(() => {
+                func.apply(null, args);
+            }, delay);
+        };
+    };
+
     // Update clock every second
     setInterval(() => {
         const now = new Date();
@@ -63,42 +74,53 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.addEventListener('click', () => sendControlCommand('previous'));
     nextBtn.addEventListener('click', () => sendControlCommand('next'));
 
-    // Handle search input
-    searchInput.addEventListener('keydown', async (event) => {
-        if (event.key === 'Enter') {
-            const query = event.target.value;
-            const type = searchType.value;
-            if (query) {
-                try {
-                    const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}&type=${type}`);
-                    const results = await response.json();
-                    
-                    searchResultsList.innerHTML = '';
-                    results.forEach(item => {
-                        const isTrack = type === 'track';
-                        const name = isTrack ? item.name : item.name;
-                        const artistOrOwner = isTrack ? item.artist : item.owner;
-                        const image = isTrack ? item.album_art : (item.image || 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0');
-                        const uri = item.uri;
-
-                        const resultItem = document.createElement('div');
-                        resultItem.className = 'search-result-item';
-                        resultItem.innerHTML = `
-                            <img src="${image}" class="search-result-image">
-                            <div>
-                                <h4 style="margin: 0; color: white;">${name}</h4>
-                                <p style="margin: 0; color: #b3b3b3;">${artistOrOwner}</p>
-                            </div>
-                        `;
-                        resultItem.addEventListener('click', () => {
-                            sendControlCommand('play_track', uri);
-                        });
-                        searchResultsList.appendChild(resultItem);
-                    });
-                } catch (error) {
-                    console.error('Error searching:', error);
-                }
-            }
+    // Handle live search
+    const performSearch = async () => {
+        const query = searchInput.value;
+        const type = searchType.value;
+        
+        if (!query) {
+            searchResultsList.innerHTML = '';
+            return;
         }
-    });
+        
+        try {
+            const response = await fetch(`/api/spotify/search?query=${encodeURIComponent(query)}&type=${type}`);
+            const results = await response.json();
+            
+            searchResultsList.innerHTML = '';
+            if (results.error) {
+                searchResultsList.innerHTML = `<p style="color: red;">Error: ${results.error}</p>`;
+                return;
+            }
+
+            results.forEach(item => {
+                const isTrack = type === 'track';
+                const name = isTrack ? item.name : item.name;
+                const artistOrOwner = isTrack ? item.artist : item.owner;
+                const image = isTrack ? item.album_art : (item.image || 'https://i.scdn.co/image/ab6761610000e5ebc58f9a2e6b6680a6b72a44d0');
+                const uri = item.uri;
+
+                const resultItem = document.createElement('div');
+                resultItem.className = 'search-result-item';
+                resultItem.innerHTML = `
+                    <img src="${image}" class="search-result-image">
+                    <div>
+                        <h4 style="margin: 0; color: white;">${name}</h4>
+                        <p style="margin: 0; color: #b3b3b3;">${artistOrOwner}</p>
+                    </div>
+                `;
+                resultItem.addEventListener('click', () => {
+                    sendControlCommand('play_track', uri);
+                });
+                searchResultsList.appendChild(resultItem);
+            });
+        } catch (error) {
+            console.error('Error searching:', error);
+        }
+    };
+
+    const debouncedSearch = debounce(performSearch, 300); // 300ms delay
+    searchInput.addEventListener('keyup', debouncedSearch);
+    searchType.addEventListener('change', performSearch);
 });

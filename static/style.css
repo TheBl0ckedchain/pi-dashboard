@@ -43,7 +43,7 @@ body {
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
-    overflow: hidden; /* Fix for overflow */
+    overflow: hidden;
 }
 
 /* Specific Panel Styles */
@@ -115,6 +115,7 @@ body {
     flex-direction: column;
     flex-grow: 1;
     gap: 1vw;
+    min-height: 0; /* Ensures the flex item can shrink */
 }
 
 .search-controls {
@@ -149,6 +150,7 @@ body {
     flex-direction: column;
     gap: 0.5vw;
     padding-right: 0.5vw;
+    min-height: 0; /* Allows this container to scroll properly */
 }
 
 #search-results-list::-webkit-scrollbar {
