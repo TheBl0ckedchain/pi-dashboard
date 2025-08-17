@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="panel spotify-panel">
+            <div class="now-playing">
+                <img id="album-art" src="" alt="Album Art">
+                <div id="track-info">
+                    <h2 id="track-name"></h2>
+                    <p id="artist-name"></p>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="prev-btn">⏮️</button>
+                <button id="play-pause-btn">⏯️</button>
+                <button id="next-btn">⏭️</button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search for music...">
+                <div id="search-results"></div>
+            </div>
+        </div>
+
+        <div class="panel right-panel">
+            <div class="clock-panel">
+                <h1 id="current-time"></h1>
+            </div>
+            <div class="future-features-panel">
+                <h2>Future Features</h2>
+                <p>This panel is ready for new features!</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

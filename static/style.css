@@ -1,0 +1,91 @@
+body {
+    background-image: url('background_blur.jpg');
+    background-size: cover;
+    background-position: center;
+    font-family: 'Segoe UI', sans-serif;
+    color: #b3b3b3;
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.main-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1400px;
+    height: 90vh;
+}
+
+.panel {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 25px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.spotify-panel {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.right-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#album-art {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.controls button {
+    background-color: transparent;
+    border: 2px solid #b3b3b3;
+    color: #b3b3b3;
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.controls button:hover {
+    background-color: #1ed760;
+    color: white;
+    border-color: #1ed760;
+}
+
+.clock-panel {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+    font-size: 3rem;
+}
+
+.future-features-panel {
+    text-align: center;
+    height: 60%;
+    padding: 20px;
+}
