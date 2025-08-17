@@ -6,12 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const playPauseBtn = document.getElementById('play-pause-btn');
     const prevBtn = document.getElementById('prev-btn');
     const nextBtn = document.getElementById('next-btn');
-
-    const tabButtons = document.querySelectorAll('.tab-button');
-    const tabContents = document.querySelectorAll('.tab-content');
     const searchInput = document.getElementById('search-input');
     const searchResultsList = document.getElementById('search-results-list');
-    const nowPlayingInfo = document.getElementById('now-playing-info');
 
     // Debounce function to limit API calls
     let searchTimeout;
@@ -77,19 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(performSearch, 300);
     });
-
-    // Tab switching logic
-    tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            tabButtons.forEach(btn => btn.classList.remove('active'));
-            tabContents.forEach(content => content.style.display = 'none');
-            
-            button.classList.add('active');
-            const targetTab = document.getElementById(button.dataset.tab);
-            targetTab.style.display = 'flex';
-        });
-    });
-
+    
     // Clock and Player functionality
     setInterval(() => {
         const now = new Date();
