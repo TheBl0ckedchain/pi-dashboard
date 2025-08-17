@@ -1,52 +1,24 @@
-# spotify_api.py
+# ... (inside the SpotifyAPI class in spotify_api.py)
 
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-import config
+def get_playlists(self):
+    try:
+        playlists = self.sp.current_user_playlists(limit=50) # Get up to 50 playlists
+        return [{'name': item['name'], 'uri': item['uri']} for item in playlists['items']]
+    except Exception as e:
+        print(f"Error fetching playlists: {e}")
+        return []
 
-class SpotifyAPI:
-    def __init__(self):
-        self.scope = "user-read-playback-state user-modify-playback-state user-read-currently-playing"
-        self.sp_oauth = SpotifyOAuth(
-            client_id=config.SPOTIPY_CLIENT_ID,
-            client_secret=config.SPOTIPY_CLIENT_SECRET,
-            redirect_uri=config.SPOTIPY_REDIRECT_URI,
-            scope=self.scope
-        )
-        self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
+def search_tracks(self, query):
+    try:
+        results = self.sp.search(q=query, type='track', limit=20) # Search for up to 20 tracks
+        return [{'name': track['name'], 'artist': track['artists'][0]['name'], 'uri': track['uri'], 'album_art': track['album']['images'][0]['url']} for track in results['tracks']['items']]
+    except Exception as e:
+        print(f"Error searching for tracks: {e}")
+        return []
+
+def play_track(self, uri):
+    try:
+        self.sp.start_playback(uris=[uri])
+    except Exception as e:
+        print(f"Error playing track: {e}")
         self.authenticate()
-
-    def authenticate(self):
-        try:
-            self.sp.current_playback()
-            print("Spotify authenticated successfully.")
-        except spotipy.exceptions.SpotifyException:
-            print("Authentication required. Please authorize in your browser.")
-            self.sp_oauth.get_access_token(as_dict=False)
-            self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
-            self.authenticate()
-
-    def previous_track(self):
-        try:
-            self.sp.previous_track()
-        except Exception as e:
-            print(f"Error skipping to previous track: {e}")
-            self.authenticate()
-
-    def next_track(self):
-        try:
-            self.sp.next_track()
-        except Exception as e:
-            print(f"Error skipping to next track: {e}")
-            self.authenticate()
-
-    def toggle_playback(self):
-        try:
-            current_playback = self.sp.current_playback()
-            if current_playback and current_playback['is_playing']:
-                self.sp.pause_playback()
-            else:
-                self.sp.start_playback()
-        except Exception as e:
-            print(f"Error toggling playback: {e}")
-            self.authenticate()
