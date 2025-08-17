@@ -38,22 +38,25 @@ class IcloudAPI:
 
         try:
             reminders_lists = self.api.reminders.lists
+        except Exception as e:
+            print(f"Failed to access iCloud Reminders service: {e}")
+            return []
+
+        try:
             print(f"Found the following reminder lists: {list(reminders_lists.keys())}")
             reminders_to_display = []
-            
-            # If a specific list name is provided, check if it exists and fetch reminders from it
+
             if list_name and list_name in reminders_lists:
                 print(f"Fetching reminders from list: '{list_name}'")
                 reminders_to_display.extend([r['title'] for r in reminders_lists[list_name] if not r['isCompleted']])
             else:
-                # Otherwise, fetch from all lists
                 print("Fetching reminders from all available lists.")
                 for r_list in reminders_lists.values():
                     reminders_to_display.extend([r['title'] for r in r_list if not r['isCompleted']])
-            
+
             print(f"Found {len(reminders_to_display)} uncompleted reminders.")
             return reminders_to_display
 
         except Exception as e:
-            print(f"Error fetching reminders: {e}")
+            print(f"Error processing reminders: {e}")
             return []
