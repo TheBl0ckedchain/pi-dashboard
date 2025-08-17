@@ -1,0 +1,5 @@
+# config.py
+
+SPOTIPY_CLIENT_ID = "bc0870e7bfff4f5bbb96a4f0fbec4cff"
+SPOTIPY_CLIENT_SECRET = "0a663e4c6ad148658be55e86887410db"
+SPOTIPY_REDIRECT_URI = "http://127.0.0.1:8888/callback"
