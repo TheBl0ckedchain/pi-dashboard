@@ -13,11 +13,6 @@ class SpotifyAPI:
         )
         self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
         self.authenticate()
-        
-        # New: Find the device ID for the Raspberry Pi Player
-        self.raspi_device_id = None
-        self.find_raspberry_pi_device()
-
 
     def authenticate(self):
         try:
@@ -29,53 +24,31 @@ class SpotifyAPI:
             self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
             self.authenticate()
 
-    def find_raspberry_pi_device(self):
-        devices = self.sp.devices()
-        for device in devices['devices']:
-            if device['name'] == 'Raspberry Pi Player':
-                self.raspi_device_id = device['id']
-                print(f"Found Raspberry Pi Player with ID: {self.raspi_device_id}")
-                return
-        print("Raspberry Pi Player device not found.")
-    
     def previous_track(self):
         try:
-            # New: Pass the device ID to the API call
-            self.sp.previous_track(device_id=self.raspi_device_id)
+            self.sp.previous_track()
         except Exception as e:
             print(f"Error skipping to previous track: {e}")
             self.authenticate()
-            self.find_raspberry_pi_device()
 
     def next_track(self):
         try:
-            # New: Pass the device ID to the API call
-            self.sp.next_track(device_id=self.raspi_device_id)
+            self.sp.next_track()
         except Exception as e:
             print(f"Error skipping to next track: {e}")
             self.authenticate()
-            self.find_raspberry_pi_device()
 
     def toggle_playback(self):
         try:
             current_playback = self.sp.current_playback()
             if current_playback and current_playback['is_playing']:
-                self.sp.pause_playback(device_id=self.raspi_device_id)
+                self.sp.pause_playback()
             else:
-                self.sp.start_playback(device_id=self.raspi_device_id)
+                self.sp.start_playback()
         except Exception as e:
             print(f"Error toggling playback: {e}")
             self.authenticate()
-            self.find_raspberry_pi_device()
 
-    def _format_track(self, track):
-        return {
-            'uri': track['uri'],
-            'name': track['name'],
-            'artist': track['artists'][0]['name'] if track['artists'] else 'Unknown Artist',
-            'image': track['album']['images'][0]['url'] if track['album']['images'] else ''
-        }
-    
     def search_items(self, query, item_type):
         try:
             results = self.sp.search(q=query, type=item_type, limit=10)
@@ -113,55 +86,21 @@ class SpotifyAPI:
 
     def play_uri(self, uri):
         try:
-            # New: Pass the device ID to the API call
+            devices = self.sp.devices()
+            device_id = None
+            for device in devices['devices']:
+                if device['name'] == 'Raspberry Pi Player' and device['is_active']:
+                    device_id = device['id']
+                    break
+            
+            if not device_id:
+                print("Raspberry Pi Player is not available or active.")
+                return
+
             if "track" in uri:
-                self.sp.start_playback(uris=[uri], device_id=self.raspi_device_id)
+                self.sp.start_playback(uris=[uri], device_id=device_id)
             else:
-                self.sp.start_playback(context_uri=uri, device_id=self.raspi_device_id)
+                self.sp.start_playback(context_uri=uri, device_id=device_id)
         except Exception as e:
             print(f"Error playing URI: {e}")
             self.authenticate()
-            self.find_raspberry_pi_device()
-
-    def get_queue(self):
-        try:
-            queue = self.sp.queue()
-            
-            currently_playing_uri = None
-            queue_items = []
-            
-            if queue.get('currently_playing'):
-                currently_playing_uri = queue['currently_playing']['uri']
-                
-            if queue.get('queue'):
-                for item in queue['queue']:
-                    queue_items.append(self._format_track(item))
-            
-            return {
-                'currently_playing_uri': currently_playing_uri,
-                'queue': queue_items
-            }
-        except Exception as e:
-            print(f"Error getting queue: {e}")
-            self.authenticate()
-            self.find_raspberry_pi_device()
-            return {'error': str(e)}
-
-    def get_tracks_from_uri(self, uri):
-        try:
-            tracks = []
-            if "playlist" in uri:
-                playlist_id = uri.split(':')[-1]
-                results = self.sp.playlist_items(playlist_id)
-                for item in results['items']:
-                    track = item['track']
-                    tracks.append(self._format_track(track))
-            elif "artist" in uri:
-                artist_id = uri.split(':')[-1]
-                results = self.sp.artist_top_tracks(artist_id)
-                for track in results['tracks']:
-                    tracks.append(self._format_track(track))
-            return tracks
-        except Exception as e:
-            print(f"Error getting tracks from URI {uri}: {e}")
-            return []
