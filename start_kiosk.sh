@@ -8,6 +8,13 @@ while ! ping -c 1 google.com &> /dev/null; do
     sleep 1
 done
 
+# Pull latest changes from git
+cd /home/mrinal/pi-dashboard
+git pull origin main
+
+# Install any new requirements
+pip3 install -r requirements.txt --break-system-packages
+
 # Kill any existing Chromium processes
 pkill chromium
 pkill chromium-browser

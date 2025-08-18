@@ -40,21 +40,27 @@ body {
     padding: 20px;
     gap: 20px;
     box-sizing: border-box;
-    overflow-y: auto;
+    overflow: hidden;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
 }
 
 .left-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 2vw;
+    width: 25%;
+    min-width: 300px;
 }
 
 .right-panel {
+    width: 75%;
+}
+
+.clock-panel {
+    height: 120px;
+    min-height: 120px;
+    margin-bottom: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 2vw;
+    align-items: center;
+    justify-content: center;
 }
 
 .panel {
