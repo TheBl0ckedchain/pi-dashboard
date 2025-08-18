@@ -8,16 +8,18 @@ while ! ping -c 1 google.com &> /dev/null; do
     sleep 1
 done
 
-# Pull latest changes from git
+# Configure git pull strategy and pull latest changes
 cd /home/mrinal/pi-dashboard
-git pull origin base-app
+git config pull.rebase false  # Configure to use merge strategy
+git fetch origin base-app    # Fetch the latest changes
+git reset --hard origin/base-app  # Reset to the remote branch state
 
 # Install any new requirements
 pip3 install -r requirements.txt --break-system-packages
 
 # Kill any existing Chromium processes
-pkill chromium
-pkill chromium-browser
+pkill -f chromium
+pkill -f "chromium-browser"
 
 # Kill any existing Python processes running the app
 pkill -f "python3 app.py"
