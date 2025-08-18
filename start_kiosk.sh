@@ -16,7 +16,7 @@ pkill chromium-browser
 pkill -f "python3 app.py"
 
 # Start Flask server in the background
-cd /home/pi/pi-dashboard
+cd /home/mrinal/pi-dashboard
 python3 app.py &
 
 # Wait for Flask server to start
