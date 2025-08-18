@@ -81,10 +81,13 @@ body {
     border: none;
     color: #b3b3b3;
     font-size: 1.2rem;
-    padding: 10px 15px;
+    padding: 15px 20px;
     cursor: pointer;
     border-radius: 10px;
     transition: background-color 0.2s, color 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 50px;
 }
 
 .tab-button:hover {
@@ -145,13 +148,13 @@ body {
     color: #fff;
     border: none;
     border-radius: 50%;
-    width: 4vw;
-    height: 4vw;
-    min-width: 40px;
-    min-height: 40px;
-    font-size: 1.5vw;
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .playback-controls-section button:hover {
@@ -161,15 +164,16 @@ body {
 /* New Search Bar */
 #search-input {
     width: 100%;
-    padding: 1vw;
-    border-radius: 50px;
-    border: 1px solid #535353;
-    background: #282828;
-    color: #fff;
-    font-size: 1.2vw;
+    padding: 15px;
     margin-bottom: 15px;
-    box-sizing: border-box;
-    flex-shrink: 0;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation;
 }
 
 #search-results-list {
@@ -215,12 +219,15 @@ body {
 .track-list-item {
     display: flex;
     align-items: center;
-    gap: 1vw;
-    padding: 1vw;
-    background: transparent;
-    border-radius: 1vw;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 60px;
 }
 
 .track-list-item:hover {
