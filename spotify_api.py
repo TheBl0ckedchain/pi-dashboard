@@ -13,6 +13,7 @@ class SpotifyAPI:
         )
         self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
         self.authenticate()
+        self.device_id = self.get_device_id()
 
     def authenticate(self):
         try:
@@ -24,16 +25,23 @@ class SpotifyAPI:
             self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
             self.authenticate()
 
+    def get_device_id(self):
+        devices = self.sp.devices()
+        for device in devices['devices']:
+            if device['name'] == 'Raspberry Pi Player':
+                return device['id']
+        return None
+
     def previous_track(self):
         try:
-            self.sp.previous_track()
+            self.sp.previous_track(device_id=self.device_id)
         except Exception as e:
             print(f"Error skipping to previous track: {e}")
             self.authenticate()
 
     def next_track(self):
         try:
-            self.sp.next_track()
+            self.sp.next_track(device_id=self.device_id)
         except Exception as e:
             print(f"Error skipping to next track: {e}")
             self.authenticate()
@@ -42,9 +50,9 @@ class SpotifyAPI:
         try:
             current_playback = self.sp.current_playback()
             if current_playback and current_playback['is_playing']:
-                self.sp.pause_playback()
+                self.sp.pause_playback(device_id=self.device_id)
             else:
-                self.sp.start_playback()
+                self.sp.start_playback(device_id=self.device_id)
         except Exception as e:
             print(f"Error toggling playback: {e}")
             self.authenticate()
@@ -86,21 +94,10 @@ class SpotifyAPI:
 
     def play_uri(self, uri):
         try:
-            devices = self.sp.devices()
-            device_id = None
-            for device in devices['devices']:
-                if device['name'] == 'Raspberry Pi Player' and device['is_active']:
-                    device_id = device['id']
-                    break
-            
-            if not device_id:
-                print("Raspberry Pi Player is not available or active.")
-                return
-
             if "track" in uri:
-                self.sp.start_playback(uris=[uri], device_id=device_id)
+                self.sp.start_playback(uris=[uri], device_id=self.device_id)
             else:
-                self.sp.start_playback(context_uri=uri, device_id=device_id)
+                self.sp.start_playback(context_uri=uri, device_id=self.device_id)
         except Exception as e:
             print(f"Error playing URI: {e}")
             self.authenticate()

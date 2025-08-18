@@ -33,8 +33,7 @@ def get_current_track():
                 "track_name": track_name,
                 "artist_name": artist_name,
                 "album_art": album_art_url,
-                "is_playing": is_playing,
-                "uri": current_track['item']['uri']
+                "is_playing": is_playing
             })
         else:
             return jsonify({"status": "no_track"})
@@ -62,39 +61,17 @@ def control_spotify():
 def search_combined():
     query = request.args.get('query')
     if not query:
-        return jsonify({"artists": [], "playlists": [], "tracks": []})
+        return jsonify([])
     try:
         track_results = spotify_api.search_items(query, item_type='track')
         artist_results = spotify_api.search_items(query, item_type='artist')
         playlist_results = spotify_api.search_items(query, item_type='playlist')
         
-        return jsonify({
-            "artists": artist_results,
-            "playlists": playlist_results,
-            "tracks": track_results
-        })
+        combined_results = track_results + artist_results + playlist_results
+        
+        return jsonify(combined_results)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-@app.route('/api/spotify/queue')
-def get_queue():
-    try:
-        queue_data = spotify_api.get_queue()
-        return jsonify(queue_data)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/api/spotify/tracks_from_uri')
-def get_tracks_from_uri():
-    uri = request.args.get('uri')
-    if not uri:
-        return jsonify({"error": "No URI provided"}), 400
-    try:
-        tracks = spotify_api.get_tracks_from_uri(uri)
-        return jsonify(tracks)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
