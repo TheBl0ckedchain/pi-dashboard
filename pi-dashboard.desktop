@@ -2,4 +2,6 @@
 Type=Application
 Name=Pi Dashboard
 Exec=/bin/bash /home/pi/pi-dashboard/start_kiosk.sh
+Path=/home/mrinal/pi-dashboard
 X-GNOME-Autostart-enabled=true
+Terminal=false

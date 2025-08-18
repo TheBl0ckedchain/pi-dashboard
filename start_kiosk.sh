@@ -1,19 +1,30 @@
 #!/bin/bash
 
+# Wait for network connectivity and X server to be fully started
+sleep 10
+
 # Wait for network connectivity
 while ! ping -c 1 google.com &> /dev/null; do
     sleep 1
 done
 
+# Kill any existing Chromium processes
+pkill chromium
+pkill chromium-browser
+
+# Kill any existing Python processes running the app
+pkill -f "python3 app.py"
+
 # Start Flask server in the background
-cd "$(dirname "$0")"
+cd /home/pi/pi-dashboard
 python3 app.py &
 
 # Wait for Flask server to start
 sleep 5
 
 # Launch Chromium in kiosk mode
-chromium-browser --kiosk --disable-restore-session-state --noerrdialogs \
+DISPLAY=:0 chromium-browser --kiosk --disable-restore-session-state --noerrdialogs \
     --disable-suggestions-service --disable-translate --disable-save-password-bubble \
     --disable-session-crashed-bubble --disable-infobars --disable-features=TranslateUI \
+    --disable-gpu --no-sandbox \
     --start-maximized --app=http://localhost:5000
