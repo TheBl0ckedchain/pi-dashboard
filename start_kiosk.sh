@@ -10,7 +10,7 @@ done
 
 # Pull latest changes from git
 cd /home/mrinal/pi-dashboard
-git pull origin main
+git pull origin base-app
 
 # Install any new requirements
 pip3 install -r requirements.txt --break-system-packages
