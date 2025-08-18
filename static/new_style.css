@@ -1,0 +1,268 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+body {
+    background: url('background_blur.jpg') no-repeat center center fixed;
+    background-size: cover;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+}
+
+/* Main Layout */
+.main-container {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 15px;
+    gap: 15px;
+}
+
+/* Control Panel (Left Side - 25%) */
+.control-panel {
+    width: 25%;
+    min-width: 280px;
+    max-width: 400px;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+/* Content Panel (Right Side - 75%) */
+.content-panel {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    overflow: hidden;
+}
+
+/* Panel Base Styles */
+.panel {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 20px;
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+/* Clock Panel */
+.clock-panel {
+    height: 100px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0;
+}
+
+#current-time {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+/* Features Panel */
+.features-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 15px;
+}
+
+/* Spotify Panel */
+.spotify-panel {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.album-art-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+#album-art {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.track-info {
+    text-align: center;
+    width: 100%;
+}
+
+.track-info h2 {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+}
+
+/* Playback Controls */
+.playback-controls-section {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px 0;
+}
+
+.playback-controls-section button {
+    background: #282828;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    font-size: 24px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Tab System */
+.tab-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tab-button {
+    background: transparent;
+    border: none;
+    color: #b3b3b3;
+    font-size: 1.1rem;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.2s, color 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.tab-button.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Tab Content */
+.tab-content {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-right: 5px;
+}
+
+/* Search Input */
+#search-input {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 16px;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+/* Track Lists */
+.track-list-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.track-list-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.track-list-item.now-playing {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+}
+
+/* Now Playing Info */
+.now-playing-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+    margin-bottom: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.now-playing-album-art {
+    width: 60px;
+    height: 60px;
+    border-radius: 5px;
+}
+
+/* Media Queries for Different Screen Sizes */
+@media screen and (max-width: 1200px) {
+    .control-panel {
+        min-width: 250px;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .main-container {
+        flex-direction: column;
+    }
+    
+    .control-panel {
+        width: 100%;
+        max-width: none;
+        height: auto;
+    }
+    
+    .spotify-panel {
+        height: auto;
+    }
+    
+    .content-panel {
+        width: 100%;
+    }
+}
