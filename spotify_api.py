@@ -13,6 +13,11 @@ class SpotifyAPI:
         )
         self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
         self.authenticate()
+        
+        # New: Find the device ID for the Raspberry Pi Player
+        self.raspi_device_id = None
+        self.find_raspberry_pi_device()
+
 
     def authenticate(self):
         try:
@@ -24,30 +29,44 @@ class SpotifyAPI:
             self.sp = spotipy.Spotify(auth_manager=self.sp_oauth)
             self.authenticate()
 
+    def find_raspberry_pi_device(self):
+        devices = self.sp.devices()
+        for device in devices['devices']:
+            if device['name'] == 'Raspberry Pi Player':
+                self.raspi_device_id = device['id']
+                print(f"Found Raspberry Pi Player with ID: {self.raspi_device_id}")
+                return
+        print("Raspberry Pi Player device not found.")
+    
     def previous_track(self):
         try:
-            self.sp.previous_track()
+            # New: Pass the device ID to the API call
+            self.sp.previous_track(device_id=self.raspi_device_id)
         except Exception as e:
             print(f"Error skipping to previous track: {e}")
             self.authenticate()
+            self.find_raspberry_pi_device()
 
     def next_track(self):
         try:
-            self.sp.next_track()
+            # New: Pass the device ID to the API call
+            self.sp.next_track(device_id=self.raspi_device_id)
         except Exception as e:
             print(f"Error skipping to next track: {e}")
             self.authenticate()
+            self.find_raspberry_pi_device()
 
     def toggle_playback(self):
         try:
             current_playback = self.sp.current_playback()
             if current_playback and current_playback['is_playing']:
-                self.sp.pause_playback()
+                self.sp.pause_playback(device_id=self.raspi_device_id)
             else:
-                self.sp.start_playback()
+                self.sp.start_playback(device_id=self.raspi_device_id)
         except Exception as e:
             print(f"Error toggling playback: {e}")
             self.authenticate()
+            self.find_raspberry_pi_device()
 
     def _format_track(self, track):
         return {
@@ -94,13 +113,15 @@ class SpotifyAPI:
 
     def play_uri(self, uri):
         try:
+            # New: Pass the device ID to the API call
             if "track" in uri:
-                self.sp.start_playback(uris=[uri])
+                self.sp.start_playback(uris=[uri], device_id=self.raspi_device_id)
             else:
-                self.sp.start_playback(context_uri=uri)
+                self.sp.start_playback(context_uri=uri, device_id=self.raspi_device_id)
         except Exception as e:
             print(f"Error playing URI: {e}")
             self.authenticate()
+            self.find_raspberry_pi_device()
 
     def get_queue(self):
         try:
@@ -123,6 +144,7 @@ class SpotifyAPI:
         except Exception as e:
             print(f"Error getting queue: {e}")
             self.authenticate()
+            self.find_raspberry_pi_device()
             return {'error': str(e)}
 
     def get_tracks_from_uri(self, uri):
