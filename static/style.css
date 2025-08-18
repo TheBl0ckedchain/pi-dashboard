@@ -1,3 +1,25 @@
+html {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: url('background_blur.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    -webkit-overflow-scrolling: touch;
+    touch-action: manipulation;
+}
+
 body {
     background-image: url('background_blur.jpg');
     background-size: cover;
@@ -13,13 +35,14 @@ body {
 }
 
 .main-container {
-    /* Adjusted the grid columns to give the left panel a little more than 1/4th of the width */
-    display: grid;
-    grid-template-columns: 1fr 3fr;
-    gap: 2vw;
-    width: 100%;
-    max-width: 95vw;
-    height: 95vh;
+    display: flex;
+    height: 100%;
+    padding: 20px;
+    gap: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
 }
 
 .left-panel {
