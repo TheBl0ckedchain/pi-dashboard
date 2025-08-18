@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=Pi Dashboard
+Exec=/bin/bash /home/pi/pi-dashboard/start_kiosk.sh
+X-GNOME-Autostart-enabled=true
