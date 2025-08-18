@@ -1,4 +1,6 @@
-html {
+html, body {
+    margin: 0;
+    padding: 0;
     height: 100%;
     width: 100%;
     overflow: hidden;
@@ -36,22 +38,32 @@ body {
 
 .main-container {
     display: flex;
-    height: 100%;
-    padding: 20px;
-    gap: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 15px;
+    gap: 15px;
     box-sizing: border-box;
-    overflow: hidden;
-    -webkit-overflow-scrolling: touch;
-    touch-action: pan-y;
 }
 
 .left-panel {
     width: 25%;
-    min-width: 300px;
+    min-width: 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    height: 100%;
 }
 
-.right-panel {
-    width: 75%;
+.clock-panel {
+    height: 100px;
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
 }
 
 .clock-panel {
